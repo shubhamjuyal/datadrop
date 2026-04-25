@@ -9,6 +9,26 @@ const BYPASS =
   process.env.BYPASS_TOKEN ??
   process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
 
+function getBypassToken(req: NextRequest): string | undefined {
+  return (
+    BYPASS ??
+    req.headers.get("x-vercel-protection-bypass") ??
+    req.cookies.get("__vercel_live_token")?.value ??
+    undefined
+  );
+}
+
+function buildTargetUrl(req: NextRequest, path: string[]): string {
+  const raw = `${BACKEND_URL}/${path.join("/")}${req.nextUrl.search}`;
+  const token = getBypassToken(req);
+  if (!token) return raw;
+
+  const url = new URL(raw);
+  url.searchParams.set("x-vercel-protection-bypass", token);
+  url.searchParams.set("x-vercel-set-bypass-cookie", "true");
+  return url.toString();
+}
+
 function buildForwardHeaders(req: NextRequest, forceBypass: boolean): Record<string, string> {
   const headers: Record<string, string> = {};
   const incoming = req.headers;
@@ -24,11 +44,7 @@ function buildForwardHeaders(req: NextRequest, forceBypass: boolean): Record<str
 
   headers.Accept = incoming.get("accept") ?? "application/json";
 
-  const token =
-    BYPASS ??
-    incoming.get("x-vercel-protection-bypass") ??
-    req.cookies.get("__vercel_live_token")?.value ??
-    undefined;
+  const token = getBypassToken(req);
 
   if (token && (forceBypass || !incoming.get("x-vercel-protection-bypass"))) {
     headers["x-vercel-protection-bypass"] = token;
@@ -59,8 +75,7 @@ async function proxy(
   ctx: { params: Promise<{ path: string[] }> },
 ) {
   const { path } = await ctx.params;
-  const search = req.nextUrl.search;
-  const target = `${BACKEND_URL}/${path.join("/")}${search}`;
+  const target = buildTargetUrl(req, path);
   const hasBody = req.method !== "GET" && req.method !== "HEAD";
   const requestBody = hasBody ? await req.text() : undefined;
 
