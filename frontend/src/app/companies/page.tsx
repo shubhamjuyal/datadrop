@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EndpointHeader } from "@/components/EndpointHeader";
+import { InfoSection } from "@/components/InfoSection";
 import { TryItForm } from "@/components/TryItForm";
 import { ResponseTabs } from "@/components/ResponseTabs";
 import { CompanyTable } from "@/components/CompanyTable";
@@ -50,6 +51,54 @@ export default function CompaniesPage() {
         method="GET"
         path="/companies"
         description="Top companies by market cap, ranked. Cached 24h; auto-rescrapes when stale."
+      />
+
+      <InfoSection
+        blocks={[
+          {
+            heading: "What this page does",
+            body: (
+              <p>
+                Calls <code className="rounded bg-muted px-1">GET /companies?limit=N</code> on
+                the DataDrop API and renders the response — both as a parsed table and
+                as raw JSON.
+              </p>
+            ),
+          },
+          {
+            heading: "How it works under the hood",
+            body: (
+              <p>
+                The backend scrapes the top 100 companies from{" "}
+                <a
+                  href="https://companiesmarketcap.com"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="underline hover:text-foreground"
+                >
+                  companiesmarketcap.com
+                </a>{" "}
+                with headless Playwright, caches the result in MongoDB for 24 hours,
+                and serves the first <code className="rounded bg-muted px-1">N</code>{" "}
+                rows. Concurrent callers during a stale window share one in-flight
+                scrape.
+              </p>
+            ),
+          },
+          {
+            heading: "Try it",
+            body: (
+              <p>
+                Pick a <code className="rounded bg-muted px-1">limit</code> (1–100),
+                hit Send, and watch the freshness line — it shows{" "}
+                <code className="rounded bg-muted px-1">lastScrapedAt</code> and a{" "}
+                <code className="rounded bg-muted px-1">stale</code> flag if cached
+                data is being served after a failed re-scrape. Click any row's symbol
+                to drill into its detail page.
+              </p>
+            ),
+          },
+        ]}
       />
 
       <TryItForm onSubmit={onSubmit} loading={loading}>

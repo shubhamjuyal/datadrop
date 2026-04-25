@@ -21,7 +21,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${geistSans.variable} h-full antialiased`}
+      className={`dark ${geistSans.variable} ${geistSans.className} h-full antialiased`.trim()}
       style={{ colorScheme: "dark" }}
     >
       <body className="min-h-full bg-background text-foreground font-sans">

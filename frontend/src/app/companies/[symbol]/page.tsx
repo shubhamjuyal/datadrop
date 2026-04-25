@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EndpointHeader } from "@/components/EndpointHeader";
+import { InfoSection } from "@/components/InfoSection";
 import { TryItForm } from "@/components/TryItForm";
 import { ResponseTabs } from "@/components/ResponseTabs";
 import { CompanyDetailCard } from "@/components/CompanyDetailCard";
@@ -74,6 +75,47 @@ export default function CompanyDetailPage() {
         method="GET"
         path="/companies/:symbol"
         description="Detailed info for one top-100 company: stats, categories, description, and yearly history."
+      />
+
+      <InfoSection
+        blocks={[
+          {
+            heading: "What this page does",
+            body: (
+              <p>
+                Calls{" "}
+                <code className="rounded bg-muted px-1">GET /companies/:symbol</code>{" "}
+                and renders one company's full profile — headline stats, categories,
+                description, and end-of-year market cap history.
+              </p>
+            ),
+          },
+          {
+            heading: "How it works under the hood",
+            body: (
+              <p>
+                The backend opens that company's page on companiesmarketcap.com with
+                headless Playwright, parses the detail panels, and caches the result
+                in MongoDB for 24 hours. Transient scrape failures fall back to
+                cached data with{" "}
+                <code className="rounded bg-muted px-1">stale: true</code>.
+              </p>
+            ),
+          },
+          {
+            heading: "Try it",
+            body: (
+              <p>
+                Type a ticker (e.g. <code className="rounded bg-muted px-1">NVDA</code>,{" "}
+                <code className="rounded bg-muted px-1">GOOG</code>,{" "}
+                <code className="rounded bg-muted px-1">AAPL</code>) and fetch. The
+                URL is shareable — <code className="rounded bg-muted px-1">/companies/NVDA</code>{" "}
+                refetches on load. Only symbols in the current top-100 listing are
+                supported (404 otherwise).
+              </p>
+            ),
+          },
+        ]}
       />
 
       <TryItForm onSubmit={onSubmit} loading={loading} submitLabel="Fetch">
