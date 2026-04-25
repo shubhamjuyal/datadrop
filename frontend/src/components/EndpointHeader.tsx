@@ -10,10 +10,10 @@ export function EndpointHeader({ method, path, description }: Props) {
   return (
     <div className="border-b border-border pb-6">
       <div className="flex items-center gap-3">
-        <Badge variant="outline" className="font-mono text-xs">
+        <Badge variant="outline" className="text-xs">
           {method}
         </Badge>
-        <code className="font-mono text-lg text-foreground">{path}</code>
+        <span className="text-lg text-foreground">{path}</span>
       </div>
       <p className="mt-2 text-sm text-muted-foreground">{description}</p>
     </div>

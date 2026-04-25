@@ -33,7 +33,7 @@ export function CompanyDetailCard({ company, stale }: Props) {
         <div className="flex-1">
           <div className="flex flex-wrap items-center gap-2">
             <h2 className="text-2xl font-bold">{company.name}</h2>
-            <span className="font-mono text-sm text-muted-foreground">
+            <span className="text-sm text-muted-foreground">
               {company.symbol}
             </span>
             {company.rank ? (

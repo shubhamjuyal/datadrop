@@ -56,7 +56,7 @@ export function CompanyTable({ companies }: Props) {
                   <span className="font-medium">{c.name}</span>
                 </Link>
               </TableCell>
-              <TableCell className="font-mono text-xs text-muted-foreground">
+              <TableCell className="text-xs text-muted-foreground">
                 {c.symbol}
               </TableCell>
               <TableCell className="text-right tabular-nums">

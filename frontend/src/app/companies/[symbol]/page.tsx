@@ -84,7 +84,7 @@ export default function CompanyDetailPage() {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="NVDA"
-            className="w-40 font-mono uppercase"
+            className="w-40 uppercase"
             autoCapitalize="characters"
           />
           <p className="text-xs text-muted-foreground">
