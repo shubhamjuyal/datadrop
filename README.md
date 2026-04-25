@@ -1,15 +1,22 @@
 # DataDrop
 
-A small TypeScript REST service that scrapes the top companies by market cap from
+A TypeScript REST service that scrapes the top companies by market cap from
 [companiesmarketcap.com](https://companiesmarketcap.com) with Playwright, caches
-them in MongoDB, and serves them through a clean HTTP API.
+them in MongoDB, and serves them through a clean HTTP API — plus a Next.js
+frontend that documents and exercises the API live.
 
 ## Stack
 
+**Backend** (`src/`)
 - TypeScript, Express
 - Playwright (Chromium, headless) for scraping
 - MongoDB (native `mongodb` driver)
 - `dotenv` for config, `tsx` for dev
+
+**Frontend** (`frontend/`)
+- Next.js 16 (App Router) + React 19
+- Tailwind CSS v4, shadcn / Base UI components, Geist Sans
+- Talks directly to the Express API (CORS-enabled)
 
 ## How it works
 
@@ -31,8 +38,19 @@ Atlas).
 ```bash
 npm install                              # installs deps + downloads Chromium
 cp .env.example .env                     # edit MONGODB_URI if needed
-npm run dev                              # tsx watch src/index.ts
+npm run dev                              # tsx watch src/index.ts → :3000
 ```
+
+In a second shell, start the frontend:
+
+```bash
+cd frontend
+npm install
+npm run dev                              # next dev → :3001
+```
+
+Open <http://localhost:3001>. The frontend reads `NEXT_PUBLIC_BACKEND_URL`
+(defaults to `http://localhost:3000`) to reach the Express API.
 
 A local MongoDB via Docker:
 
@@ -139,23 +157,42 @@ curl -X DELETE http://localhost:3000/companies
 ## Project layout
 
 ```
-src/
-├── index.ts              # entry: load env, connect Mongo, start Express
-├── config.ts             # env parsing
-├── db.ts                 # MongoClient singleton + collection helpers
-├── types.ts              # Company / CompanyDetail interfaces
-├── scraper.ts            # listing scraper (top 100)
-├── detailScraper.ts      # per-company detail scraper
-├── cache.ts              # staleness checks + in-flight dedup
-└── routes/
-    └── companies.ts      # GET /companies, GET /companies/:symbol, DELETE /companies
+src/                          # Express API
+├── index.ts                  # entry: load env, connect Mongo, start Express
+├── config.ts                 # env parsing
+├── db.ts                     # MongoClient singleton + collection helpers
+├── types.ts                  # Company / CompanyDetail interfaces
+├── scraper.ts                # listing scraper (top 100)
+├── detailScraper.ts          # per-company detail scraper
+├── cache.ts                  # staleness checks + in-flight dedup
+└── routes/companies.ts       # GET /companies, GET /companies/:symbol, DELETE /companies
+
+frontend/src/                 # Next.js app
+├── app/
+│   ├── page.tsx              # landing + /companies playground
+│   ├── companies/[symbol]/   # per-company detail playground
+│   └── api/[...path]/        # optional same-origin proxy to the Express API
+├── components/               # CompanyTable, CompanyDetailCard, JsonViewer, …
+└── lib/{api,format,types}.ts # typed API client + formatters
 ```
 
 ## Scripts
+
+Backend (repo root):
 
 ```
 npm run dev         # tsx watch src/index.ts
 npm run build       # tsc
 npm start           # node dist/index.js
+npm run typecheck   # tsc --noEmit
+```
+
+Frontend (`frontend/`):
+
+```
+npm run dev         # next dev -p 3001
+npm run build       # next build
+npm start           # next start -p 3001
+npm run lint        # eslint
 npm run typecheck   # tsc --noEmit
 ```
