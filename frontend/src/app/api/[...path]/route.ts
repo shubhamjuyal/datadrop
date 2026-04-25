@@ -30,7 +30,9 @@ async function proxy(
     return NextResponse.json(
       {
         error: "Upstream unreachable",
-        detail: err instanceof Error ? err.message : String(err),
+        detail: `Failed to reach ${target}: ${err instanceof Error ? err.message : String(err)}`,
+        backendUrlSet: Boolean(process.env.BACKEND_URL),
+        bypassTokenSet: Boolean(BYPASS),
       },
       { status: 502 },
     );
