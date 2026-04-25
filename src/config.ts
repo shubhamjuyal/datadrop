@@ -14,11 +14,11 @@ function intOr(name: string, fallback: number): number {
   return n;
 }
 
-// CORS: unset = local Next; * = any origin; comma = allowlist
+// CORS: unset or * = any origin; comma = allowlist
 function corsOriginFromEnv(): boolean | string | string[] {
   const raw = process.env.CORS_ORIGIN;
   if (raw === undefined) {
-    return "http://localhost:3001";
+    return true; // public by default
   }
   const t = raw.trim();
   if (t === "" || t === "*") {
