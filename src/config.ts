@@ -14,9 +14,16 @@ function intOr(name: string, fallback: number): number {
   return n;
 }
 
+function corsOriginFromEnv(): string | string[] {
+  const v = process.env.CORS_ORIGIN ?? "http://localhost:3001";
+  const parts = v.split(",").map((s) => s.trim()).filter(Boolean);
+  return parts.length === 1 ? parts[0] : parts;
+}
+
 export const config = Object.freeze({
   mongoUri: required("MONGODB_URI"),
   port: intOr("PORT", 3000),
   cacheTtlMs: intOr("CACHE_TTL_HOURS", 24) * 60 * 60 * 1000,
   scrapeTimeoutMs: intOr("SCRAPE_TIMEOUT_MS", 30_000),
+  corsOrigin: corsOriginFromEnv(),
 });

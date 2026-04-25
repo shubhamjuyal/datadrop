@@ -1,4 +1,5 @@
 import express, { type ErrorRequestHandler } from "express";
+import cors from "cors";
 import { config } from "./config.js";
 import { connect, disconnect } from "./db.js";
 import { companiesRouter } from "./routes/companies.js";
@@ -8,6 +9,7 @@ async function main() {
   console.log("Connected to Mongo");
 
   const app = express();
+  app.use(cors({ origin: config.corsOrigin }));
   app.use(companiesRouter);
 
   const errorHandler: ErrorRequestHandler = (err, _req, res, _next) => {
