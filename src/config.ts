@@ -14,10 +14,21 @@ function intOr(name: string, fallback: number): number {
   return n;
 }
 
-function corsOriginFromEnv(): string | string[] {
-  const v = process.env.CORS_ORIGIN ?? "http://localhost:3001";
-  const parts = v.split(",").map((s) => s.trim()).filter(Boolean);
-  return parts.length === 1 ? parts[0] : parts;
+// CORS: unset = local Next; * = any origin; comma = allowlist
+function corsOriginFromEnv(): boolean | string | string[] {
+  const raw = process.env.CORS_ORIGIN;
+  if (raw === undefined) {
+    return "http://localhost:3001";
+  }
+  const t = raw.trim();
+  if (t === "" || t === "*") {
+    return true; // reflect request Origin — public read API
+  }
+  const parts = t.split(",").map((s) => s.trim()).filter(Boolean);
+  if (parts.length === 0) {
+    return true;
+  }
+  return parts.length === 1 ? parts[0]! : parts;
 }
 
 export const config = Object.freeze({
