@@ -4,7 +4,11 @@ import type {
   CompanyDetailResponse,
 } from "./types";
 
-const BASE = "/api";
+const BASE = (
+  process.env.NEXT_PUBLIC_BACKEND_URL ??
+  process.env.BACKEND_URL ??
+  "http://localhost:3000"
+).replace(/\/$/, "");
 
 export class ApiError extends Error {
   status: number;
