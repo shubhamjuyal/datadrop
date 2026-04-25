@@ -4,7 +4,7 @@ import type {
   CompanyDetailResponse,
 } from "./types";
 
-const BASE = process.env.NEXT_PUBLIC_BACKEND_URL ?? "http://localhost:3000";
+const BASE = "/api";
 
 export class ApiError extends Error {
   status: number;
