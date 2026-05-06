@@ -1,3 +1,5 @@
+// Database types (used by server modules)
+
 export interface Company {
   symbol: string;
   slug: string | null;
@@ -8,6 +10,7 @@ export interface Company {
   change24hPct: number | null;
   country: string | null;
   logoUrl: string | null;
+  scrapedAt: Date;
 }
 
 export interface YearlyMarketCap {
@@ -30,19 +33,26 @@ export interface CompanyDetail {
   categories: string[];
   description: string | null;
   history: YearlyMarketCap[];
-  detailScrapedAt: string;
+  detailScrapedAt: Date;
 }
+
+export interface Meta {
+  _id: "companies";
+  lastScrapedAt: Date;
+}
+
+// API response types (used by client code — dates are strings after JSON serialization)
 
 export interface CompaniesResponse {
   count: number;
   lastScrapedAt: string;
   stale: boolean;
-  companies: Company[];
+  companies: Omit<Company, "scrapedAt">[];
 }
 
 export interface CompanyDetailResponse {
   stale: boolean;
-  company: CompanyDetail;
+  company: Omit<CompanyDetail, "detailScrapedAt"> & { detailScrapedAt: string };
 }
 
 export interface ApiErrorBody {

@@ -4,12 +4,6 @@ import type {
   CompanyDetailResponse,
 } from "./types";
 
-const BASE = (
-  process.env.NEXT_PUBLIC_BACKEND_URL ??
-  process.env.BACKEND_URL ??
-  "http://localhost:3000"
-).replace(/\/$/, "");
-
 export class ApiError extends Error {
   status: number;
   body: ApiErrorBody | null;
@@ -23,7 +17,7 @@ export class ApiError extends Error {
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const res = await fetch(`${BASE}${path}`, {
+  const res = await fetch(`/api${path}`, {
     ...init,
     headers: { Accept: "application/json", ...(init?.headers ?? {}) },
     cache: "no-store",

@@ -9,10 +9,10 @@ import {
   formatRelativeTime,
   pctClass,
 } from "@/lib/format";
-import type { CompanyDetail } from "@/lib/types";
+import type { CompanyDetailResponse } from "@/lib/types";
 
 interface Props {
-  company: CompanyDetail;
+  company: CompanyDetailResponse["company"];
   stale: boolean;
 }
 

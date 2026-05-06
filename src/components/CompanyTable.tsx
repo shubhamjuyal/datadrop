@@ -11,10 +11,10 @@ import {
 } from "@/components/ui/table";
 import { formatMarketCap, formatPct, formatPrice, pctClass } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import type { Company } from "@/lib/types";
+import type { CompaniesResponse } from "@/lib/types";
 
 interface Props {
-  companies: Company[];
+  companies: CompaniesResponse["companies"];
 }
 
 export function CompanyTable({ companies }: Props) {

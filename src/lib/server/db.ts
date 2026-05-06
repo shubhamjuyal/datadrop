@@ -1,8 +1,9 @@
 import { MongoClient, Collection } from "mongodb";
-import { config } from "./config.js";
-import type { Company, CompanyDetail, Meta } from "./types.js";
+import { config } from "./config";
+import type { Company, CompanyDetail, Meta } from "@/lib/types";
 
-let client: MongoClient | null = null;
+const globalForMongo = globalThis as unknown as { _mongoClient?: MongoClient };
+let client: MongoClient | null = globalForMongo._mongoClient ?? null;
 
 export async function connect(): Promise<MongoClient> {
   if (client) return client;
@@ -10,17 +11,15 @@ export async function connect(): Promise<MongoClient> {
   await c.connect();
   client = c;
 
+  if (process.env.NODE_ENV !== "production") {
+    globalForMongo._mongoClient = client;
+  }
+
   await companies().createIndex({ symbol: 1 }, { unique: true });
   await companies().createIndex({ rank: 1 });
   await companyDetails().createIndex({ symbol: 1 }, { unique: true });
 
   return c;
-}
-
-export async function disconnect(): Promise<void> {
-  if (!client) return;
-  await client.close();
-  client = null;
 }
 
 function db() {

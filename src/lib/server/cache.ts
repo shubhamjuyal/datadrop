@@ -1,8 +1,8 @@
-import { config } from "./config.js";
-import { companyDetails, meta } from "./db.js";
-import { scrapeTopCompanies } from "./scraper.js";
-import { scrapeCompanyDetail } from "./detailScraper.js";
-import type { CompanyDetail } from "./types.js";
+import { config } from "./config";
+import { companyDetails, meta } from "./db";
+import { scrapeTopCompanies } from "./scraper";
+import { scrapeCompanyDetail } from "./detailScraper";
+import type { CompanyDetail } from "@/lib/types";
 
 export interface FreshnessState {
   lastScrapedAt: Date | null;

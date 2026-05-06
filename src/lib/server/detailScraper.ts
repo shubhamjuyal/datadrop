@@ -1,8 +1,8 @@
 import { chromium } from "playwright";
-import { config } from "./config.js";
-import { companyDetails } from "./db.js";
-import { parseMarketCap, parseNumber } from "./scraper.js";
-import type { CompanyDetail, YearlyMarketCap } from "./types.js";
+import { config } from "./config";
+import { companyDetails } from "./db";
+import { parseMarketCap, parseNumber } from "./scraper";
+import type { CompanyDetail, YearlyMarketCap } from "@/lib/types";
 
 const BASE_URL = "https://companiesmarketcap.com";
 

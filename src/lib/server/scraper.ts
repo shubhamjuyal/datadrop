@@ -1,7 +1,7 @@
 import { chromium } from "playwright";
-import { config } from "./config.js";
-import { companies, meta } from "./db.js";
-import type { Company } from "./types.js";
+import { config } from "./config";
+import { companies, meta } from "./db";
+import type { Company } from "@/lib/types";
 
 const SOURCE_URL = "https://companiesmarketcap.com/";
 const PAGE_SIZE = 100;
