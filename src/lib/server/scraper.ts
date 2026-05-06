@@ -129,7 +129,7 @@ export async function scrapeTopCompanies(): Promise<void> {
       scrapedAt: now,
     }));
 
-    await companies().bulkWrite(
+    await (await companies()).bulkWrite(
       docs.map((d) => ({
         updateOne: {
           filter: { symbol: d.symbol },
@@ -139,7 +139,7 @@ export async function scrapeTopCompanies(): Promise<void> {
       })),
     );
 
-    await meta().updateOne(
+    await (await meta()).updateOne(
       { _id: "companies" },
       { $set: { lastScrapedAt: now } },
       { upsert: true },

@@ -2,39 +2,51 @@ import { MongoClient, Collection } from "mongodb";
 import { config } from "./config";
 import type { Company, CompanyDetail, Meta } from "@/lib/types";
 
-const globalForMongo = globalThis as unknown as { _mongoClient?: MongoClient };
-let client: MongoClient | null = globalForMongo._mongoClient ?? null;
+const globalForMongo = globalThis as unknown as {
+  _mongoClientPromise?: Promise<MongoClient>;
+};
 
-export async function connect(): Promise<MongoClient> {
-  if (client) return client;
-  const c = new MongoClient(config.mongoUri);
-  await c.connect();
-  client = c;
+let clientPromise: Promise<MongoClient> | null =
+  globalForMongo._mongoClientPromise ?? null;
 
-  if (process.env.NODE_ENV !== "production") {
-    globalForMongo._mongoClient = client;
-  }
+export function connect(): Promise<MongoClient> {
+  if (clientPromise) return clientPromise;
 
-  await companies().createIndex({ symbol: 1 }, { unique: true });
-  await companies().createIndex({ rank: 1 });
-  await companyDetails().createIndex({ symbol: 1 }, { unique: true });
+  const c = new MongoClient(config.mongoUri, {
+    serverSelectionTimeoutMS: 8000,
+    connectTimeoutMS: 8000,
+  });
 
-  return c;
+  clientPromise = c.connect().then(async (connected) => {
+    await connected.db().collection("companies").createIndex({ symbol: 1 }, { unique: true });
+    await connected.db().collection("companies").createIndex({ rank: 1 });
+    await connected.db().collection("company_details").createIndex({ symbol: 1 }, { unique: true });
+    return connected;
+  }).catch((err) => {
+    clientPromise = null;
+    globalForMongo._mongoClientPromise = undefined;
+    throw err;
+  });
+
+  globalForMongo._mongoClientPromise = clientPromise;
+  return clientPromise;
 }
 
-function db() {
-  if (!client) throw new Error("Mongo not connected — call connect() first");
+function db(client: MongoClient) {
   return client.db();
 }
 
-export function companies(): Collection<Company> {
-  return db().collection<Company>("companies");
+export async function companies(): Promise<Collection<Company>> {
+  const client = await connect();
+  return db(client).collection<Company>("companies");
 }
 
-export function companyDetails(): Collection<CompanyDetail> {
-  return db().collection<CompanyDetail>("company_details");
+export async function companyDetails(): Promise<Collection<CompanyDetail>> {
+  const client = await connect();
+  return db(client).collection<CompanyDetail>("company_details");
 }
 
-export function meta(): Collection<Meta> {
-  return db().collection<Meta>("meta");
+export async function meta(): Promise<Collection<Meta>> {
+  const client = await connect();
+  return db(client).collection<Meta>("meta");
 }

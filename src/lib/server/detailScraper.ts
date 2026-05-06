@@ -174,7 +174,7 @@ export async function scrapeCompanyDetail(params: {
       detailScrapedAt: new Date(),
     };
 
-    await companyDetails().updateOne(
+    await (await companyDetails()).updateOne(
       { symbol: doc.symbol },
       { $set: doc },
       { upsert: true },

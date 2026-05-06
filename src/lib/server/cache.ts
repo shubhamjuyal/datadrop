@@ -10,7 +10,7 @@ export interface FreshnessState {
 }
 
 export async function getFreshnessState(): Promise<FreshnessState> {
-  const doc = await meta().findOne({ _id: "companies" });
+  const doc = await (await meta()).findOne({ _id: "companies" });
   if (!doc) return { lastScrapedAt: null, stale: true };
   const stale = Date.now() - doc.lastScrapedAt.getTime() > config.cacheTtlMs;
   return { lastScrapedAt: doc.lastScrapedAt, stale };
@@ -38,7 +38,7 @@ export async function ensureDetailFresh(params: {
   logoUrl: string | null;
 }): Promise<CompanyDetail> {
   const symbol = params.symbol.toUpperCase();
-  const existing = await companyDetails().findOne({ symbol });
+  const existing = await (await companyDetails()).findOne({ symbol });
   if (existing && Date.now() - existing.detailScrapedAt.getTime() <= config.cacheTtlMs) {
     return existing;
   }

@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     const { lastScrapedAt } = await getFreshnessState();
 
-    const docs = await companies()
+    const docs = await (await companies())
       .find({}, { projection: { _id: 0, scrapedAt: 0 } })
       .sort({ rank: 1 })
       .limit(limit)
@@ -61,9 +61,9 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE() {
   try {
-    const companiesResult = await companies().deleteMany({});
-    const metaResult = await meta().deleteMany({});
-    const detailsResult = await companyDetails().deleteMany({});
+    const companiesResult = await (await companies()).deleteMany({});
+    const metaResult = await (await meta()).deleteMany({});
+    const detailsResult = await (await companyDetails()).deleteMany({});
     return NextResponse.json({
       deleted: {
         companies: companiesResult.deletedCount,

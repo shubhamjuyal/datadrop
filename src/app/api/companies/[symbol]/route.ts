@@ -30,7 +30,7 @@ export async function GET(
       console.error("[companies/:symbol] listing refresh failed:", (err as Error).message);
     }
 
-    const listing = await companies().findOne({ symbol });
+    const listing = await (await companies()).findOne({ symbol });
     if (!listing) {
       return NextResponse.json(
         {
@@ -64,7 +64,7 @@ export async function GET(
     } catch (err) {
       detailError = err instanceof Error ? err : new Error(String(err));
       console.error("[companies/:symbol] detail scrape failed:", detailError.message);
-      detail = await companyDetails().findOne({ symbol });
+      detail = await (await companyDetails()).findOne({ symbol });
     }
 
     if (!detail) {
