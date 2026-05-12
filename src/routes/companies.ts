@@ -112,7 +112,8 @@ companiesRouter.get("/companies/:symbol", async (req: Request, res: Response, ne
         name: listing.name,
         logoUrl: listing.logoUrl,
       });
-    } catch (err) {
+    } 
+    catch (err) {
       detailError = err instanceof Error ? err : new Error(String(err));
       console.error("[companies/:symbol] detail scrape failed:", detailError.message);
       detail = await companyDetails().findOne({ symbol });
