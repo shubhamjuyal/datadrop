@@ -53,7 +53,7 @@ export async function GET(
     }
 
     let detailError: Error | null = null;
-    let detail = null;
+    let detail: CompanyDetail | null = null;
     try {
       detail = await ensureDetailFresh({
         slug,
@@ -65,6 +65,25 @@ export async function GET(
       detailError = err instanceof Error ? err : new Error(String(err));
       console.error("[companies/:symbol] detail scrape failed:", detailError.message);
       detail = await (await companyDetails()).findOne({ symbol });
+      if (!detail) {
+        console.warn(`[companies/:symbol] no cached detail for ${symbol}; serving listing fallback`);
+        detail = {
+          symbol,
+          slug,
+          name: listing.name,
+          rank: listing.rank,
+          marketCapUsd: listing.marketCapUsd,
+          priceUsd: listing.priceUsd,
+          change1dPct: listing.change24hPct,
+          change1yPct: null,
+          country: listing.country,
+          logoUrl: listing.logoUrl,
+          categories: [],
+          description: null,
+          history: [],
+          detailScrapedAt: listing.scrapedAt,
+        };
+      }
     }
 
     if (!detail) {
